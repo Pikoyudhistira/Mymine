@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080510">
+  <meta name="description" content="ZELLA LOVE V2 — sebuah buku digital kecil yang dibuat dengan sepenuh hati.">
+  <title>ZELLA ♡</title>
+
+  <style>
+    :root {
+      --bg: #080510;
+      --panel: rgba(20, 12, 34, 0.88);
+      --pink: #ff4fd8;
+      --cyan: #00f5ff;
+      --purple: #a855f7;
+      --white: #fff4ff;
+      --muted: #c9b8d9;
+      --glow: 0 0 12px rgba(255, 79, 216, .45),
+              0 0 30px rgba(168, 85, 247, .18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--white);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 10%, rgba(168,85,247,.19), transparent 40%),
+        radial-gradient(ellipse at 85% 75%, rgba(255,79,216,.13), transparent 40%),
+        linear-gradient(145deg, #080510, #10091c 55%, #060913);
+      overflow-x: hidden;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      color: var(--cyan);
+      opacity: .55;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: .15; transform: scale(.8); }
+      to { opacity: .9; transform: scale(1.2); }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: min(100% - 28px, 760px);
+      margin: 0 auto;
+      padding: 30px 0 34px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: .7rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(0,245,255,.55);
+    }
+
+    h1 {
+      margin: 10px 0 7px;
+      font-size: clamp(2rem, 8vw, 3.6rem);
+      line-height: 1.1;
+      letter-spacing: .04em;
+      color: var(--pink);
+      text-shadow:
+        0 0 8px rgba(255,79,216,.7),
+        0 0 28px rgba(255,79,216,.3);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 1.6;
+    }
+
+    .heart {
+      display: inline-block;
+      color: var(--pink);
+      animation: heartbeat 1.4s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.18); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.12); }
+    }
+
+    .book-shell {
+      position: relative;
+      padding: 1px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--cyan), var(--pink), var(--purple));
+      box-shadow: var(--glow);
+    }
+
+    .book {
+      overflow: hidden;
+      border-radius: 21px;
+      background: rgba(8, 5, 16, .96);
+    }
+
+    .book-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 18px;
+      border-bottom: 1px solid rgba(255,79,216,.18);
+      background: rgba(255,255,255,.018);
+    }
+
+    .book-label {
+      color: var(--cyan);
+      font-size: .72rem;
+      letter-spacing: .13em;
+    }
+
+    .page-count {
+      color: var(--muted);
+      font-size: .78rem;
+      white-space: nowrap;
+    }
+
+    .progress {
+      height: 3px;
+      background: rgba(255,255,255,.07);
+    }
+
+    .progress-fill {
+      width: 33.333%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--pink));
+      box-shadow: 0 0 12px var(--pink);
+      transition: width .35s ease;
+    }
+
+    /* Area buku: swipe horizontal, scroll vertikal tetap bisa */
+    .book-viewport {
+      width: 100%;
+      overflow: hidden;
+      touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .book-track {
+      display: flex;
+      width: 100%;
+      transform: translateX(0);
+      transition: transform .38s ease;
+      will-change: transform;
+    }
+
+    .chapter {
+      flex: 0 0 100%;
+      width: 100%;
+      min-width: 0;
+      padding: clamp(22px, 6vw, 42px);
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-wrap: anywhere;
+    }
+
+    .chapter-symbol {
+      margin-bottom: 18px;
+      font-size: 2.1rem;
+      text-align: center;
+      filter: drop-shadow(0 0 12px rgba(255,79,216,.55));
+    }
+
+    .chapter-kicker {
+      margin-bottom: 9px;
+      color: var(--cyan);
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .chapter h2 {
+      margin: 0 0 23px;
+      color: var(--pink);
+      font-size: clamp(1.55rem, 6vw, 2.2rem);
+      line-height: 1.3;
+      text-align: center;
+      text-shadow: 0 0 18px rgba(255,79,216,.25);
+    }
+
+    .story {
+      color: #eee1f7;
+      font-size: .98rem;
+      line-height: 1.95;
+    }
+
+    .story p {
+      margin: 0 0 17px;
+    }
+
+    .story .center {
+      color: var(--white);
+      text-align: center;
+    }
+
+    .highlight {
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0,245,255,.25);
+    }
+
+    .pink {
+      color: var(--pink);
+    }
+
+    .divider {
+      width: 76px;
+      height: 1px;
+      margin: 4px auto 22px;
+      background: linear-gradient(90deg, transparent, var(--pink), var(--cyan), transparent);
+    }
+
+    .book-bottom {
+      padding: 15px 18px 18px;
+      border-top: 1px solid rgba(255,79,216,.18);
+    }
+
+    .swipe-hint {
+      margin: 0 0 14px;
+      color: #a99ab9;
+      font-size: .74rem;
+      text-align: center;
+    }
+
+    .navigation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav-button {
+      min-height: 42px;
+      padding: 10px 15px;
+      border: 1px solid rgba(0,245,255,.45);
+      border-radius: 12px;
+      color: var(--cyan);
+      background: rgba(0,245,255,.055);
+      cursor: pointer;
+      transition: background .2s, border-color .2s, opacity .2s;
+    }
+
+    .nav-button:hover {
+      background: rgba(0,245,255,.13);
+      border-color: var(--cyan);
+    }
+
+    .nav-button:disabled {
+      opacity: .28;
+      cursor: default;
+    }
+
+    .dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #51445f;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: var(--pink);
+      box-shadow: 0 0 12px var(--pink);
+      transform: scale(1.2);
+    }
+
+    .footer-note {
+      margin: 24px 8px 0;
+      color: #b7a5c8;
+      font-size: .82rem;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .footer-note strong {
+      color: var(--pink);
+      font-weight: 600;
+    }
+
+    .floating-heart {
+      position: fixed;
+      z-index: 0;
+      bottom: -30px;
+      color: var(--pink);
+      opacity: 0;
+      pointer-events: none;
+      animation: float-up 8s linear forwards;
+    }
+
+    @keyframes float-up {
+      0% {
+        transform: translateY(0) rotate(0);
+        opacity: 0;
+      }
+      12% { opacity: .45; }
+      85% { opacity: .25; }
+      100% {
+        transform: translateY(-110vh) rotate(30deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .app {
+        width: min(100% - 20px, 760px);
+        padding-top: 23px;
+      }
+
+      .chapter {
+        min-height: 430px;
+        padding: 24px 21px;
+      }
+
+      .story {
+        font-size: .94rem;
+        line-height: 1.85;
+      }
+
+      .nav-button {
+        padding: 9px 11px;
+        font-size: .84rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stars" id="stars" aria-hidden="true"></div>
+
+  <audio id="zellaMusic" loop preload="auto">
+    <source src="./Billfold%20-%20Memory%20Of%20Mine.m4a" type="audio/mp4">
+  </audio>
+
+  <main class="app">
+    <header>
+      <div class="eyebrow">A little universe made for you</div>
+      <h1>ZELLA <span class="heart">♡</span> LOVE</h1>
+      <div class="subtitle">
+        ♥ · Tiga bab, satu cerita, dan banyak rasa.
+      </div>
+    </header>
+
+    <section class="book-shell" aria-label="Buku digital ZELLA LOVE">
+      <div class="book">
+        <div class="book-top">
+          <span class="book-label">✦ Sebatas Arsip Ku</span>
+          <span class="page-count" id="pageCount">BAB 01 / 03</span>
+        </div>
+
+        <div class="progress">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="book-viewport" id="bookViewport">
+          <div class="book-track" id="bookTrack">
+
+            <!-- BAB 1 -->
+            <article class="chapter">
+              <div class="chapter-symbol">🌙</div>
+              <div class="chapter-kicker">Bab satu · Sebuah permulaan</div>
+              <h2>Untuk Seseorang yang Istimewa</h2>
+              <div class="divider"></div>
+
+              <div class="story">
+                <p>
+                  Ada banyak hal indah di dunia ini. Langit yang berubah
+                  warna saat senja, bintang yang muncul perlahan ketika
+                  malam tiba, dan lagu yang entah bagaimana bisa membuat
+                  kita mengingat seseorang.
+                </p>
+
+                <p>
+                  Namun, di antara begitu banyak hal yang indah, ada satu
+                  hal sederhana yang pantas mendapat tempat tersendiri:
+                  <span class="highlight">kehadiran seseorang yang membuat hari biasa terasa berarti.</span>
+                </p>
+
+                <p>
+                  Surat kecil ini mungkin tidak terbuat dari kertas mewah.
+                  Tidak pula dihiasi bunga sungguhan. Hanya beberapa kata
+                  di dalam dunia digital, ditemani cahaya neon dan melodi
+                  yang mengalun pelan.
+                </p>
+
+                <p>
+                  Tapi setiap bagiannya dibuat dengan satu harapan:
+                  semoga saat kamu membacanya, kamu bisa tersenyum
+                  meskipun hanya sebentar.
+                </p>
+
+                <p class="center pink">
+                  Karena terkadang, hal kecil bisa membawa kehangatan
+                  yang besar. ♡
+                </p>
+              </div>
+            </article>
+
+            <!-- BAB 2 -->
+            <article class="chapter">
+              <div class="chapter-symbol">💗</div>
+              <div class="chapter-kicker">Bab dua · Tentang kamu</div>
+              <h2>Kamu Sudah Berusaha Sejauh Ini</h2>
+              <div class="divider"></div>
+
+              <div class="story">
+                <p>
+                  Aku ingin kamu tahu sesuatu. Tidak semua perjuangan
+                  terlihat oleh orang lain. Ada lelah yang kamu simpan
+                  sendiri, ada pikiran yang tidak selalu kamu ceritakan,
+                  dan ada hari-hari ketika kamu harus tetap melangkah
+                  meskipun rasanya ingin berhenti sebentar.
+                </p>
+
+                <p>
+                  Mungkin ada pekerjaan yang belum selesai, tanggung jawab
+                  yang menunggu, atau hal-hal yang tidak berjalan sesuai
+                  rencana. Kadang kamu merasa harus selalu kuat, seolah
+                  tidak boleh merasa capek.
+                </p>
+
+                <p>
+                  Tapi dengarkan ini baik-baik:
+                  <span class="highlight">kamu tidak harus sempurna untuk menjadi seseorang yang hebat.</span>
+                  Kamu boleh lelah. Kamu boleh beristirahat. Kamu boleh
+                  mengambil waktu untuk dirimu sendiri.
+                </p>
+
+                <p>
+                  Nilai dirimu tidak hanya ditentukan oleh seberapa banyak
+                  yang berhasil kamu selesaikan hari ini. Dirimu juga
+                  berharga saat sedang belajar, saat melakukan kesalahan,
+                  dan saat mencoba lagi setelah hari yang sulit.
+                </p>
+
+                <p>
+                  Jadi, kalau hari ini terasa berat, jangan terlalu keras
+                  kepada dirimu sendiri. Ingatlah semua langkah kecil
+                  yang sudah kamu ambil. Kamu sudah sampai sejauh ini,
+                  dan itu bukan hal yang sepele.
+                </p>
+
+                <p class="center pink">
+                  Aku harap kamu juga bisa bangga pada dirimu sendiri. ♡
+                </p>
+              </div>
+            </article>
+
+            <!-- BAB 3 -->
+            <article class="chapter">
+              <div class="chapter-symbol">✨</div>
+              <div class="chapter-kicker">Bab tiga · Sebelum terlelap</div>
+              <h2>Selamat Malam, sayangku yang hebat</h2>
+              <div class="divider"></div>
+
+              <div class="story">
+                <p>
+                  Sekarang, jika semua pekerjaanmu sudah selesai,
+                  biarkan dunia menunggu sebentar. Kamu tidak perlu
+                  memikirkan semuanya sekaligus malam ini.
+                </p>
+
+                <p>
+                  Tarik napas perlahan. Lepaskan bahumu. Pejamkan mata
+                  sejenak dan izinkan dirimu menikmati ketenangan yang
+                  mungkin sejak tadi belum sempat kamu rasakan.
+                </p>
+
+                <p>
+                  Terima kasih sudah berjuang hari ini. Terima kasih
+                  karena tetap mencoba, bahkan ketika tidak semuanya
+                  mudah. Semoga kamu tidak lupa memberi dirimu sendiri
+                  sedikit kasih sayang setelah begitu banyak hal yang
+                  kamu lakukan.
+                </p>
+
+                <p>
+                  Semoga malam ini membawa tidur yang nyenyak,
+                  pikiran yang lebih tenang, dan mimpi-mimpi yang indah.
+                  Semoga esok datang dengan kesempatan baru, harapan
+                  baru, dan alasan kecil untuk tersenyum lagi.
+                </p>
+
+                <p>
+                  Kalau hari ini belum sempurna, tidak apa-apa.
+                  Kamu sudah melakukan yang terbaik yang kamu bisa
+                  dengan keadaan yang kamu hadapi.
+                </p>
+
+                <p class="center">
+                  <span class="pink">Selamat tidur, Sayangku.</span><br>
+                  Semoga hatimu tenang, mimpimu indah,<br>
+                  dan esok menyambutmu dengan lembut.
+                </p>
+
+                <p class="center">
+                  <span class="highlight">Rest well. You deserve peace.</span>
+                </p>
+
+                <p class="center pink">
+                  Good night,my Mine and sweet dreams. ♡
+                </p>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+        <div class="book-bottom">
+          <p class="swipe-hint">
+            Geser ke kiri atau kanan untuk membuka bab berikutnya ✦
+          </p>
+
+          <nav class="navigation" aria-label="Navigasi bab">
+            <button class="nav-button" id="prevButton" type="button">
+              ← Sebelumnya
+            </button>
+
+            <div class="dots" aria-label="Pilih bab">
+              <button class="dot active" type="button" data-page="0" aria-label="Bab 1"></button>
+              <button class="dot" type="button" data-page="1" aria-label="Bab 2"></button>
+              <button class="dot" type="button" data-page="2" aria-label="Bab 3"></button>
+            </div>
+
+            <button class="nav-button" id="nextButton" type="button">
+              Berikutnya →
+            </button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Dibuat dengan sedikit cahaya neon dan banyak kehangatan.<br>
+      <strong>Untuk kamu, yang pantas mendapat istirahat dan kebahagiaan.</strong>
+      <br><span class="pink">Made with piko · ZELLA YULIA HAFIB ♡</span>
+    </p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const track = document.getElementById("bookTrack");
+      const viewport = document.getElementById("bookViewport");
+      const chapters = Array.from(document.querySelectorAll(".chapter"));
+      const pageCount = document.getElementById("pageCount");
+      const progressFill = document.getElementById("progressFill");
+      const prevButton = document.getElementById("prevButton");
+      const nextButton = document.getElementById("nextButton");
+      const dots = Array.from(document.querySelectorAll(".dot"));
+      const music = document.getElementById("zellaMusic");
+
+      const totalPages = chapters.length;
+      let currentPage = 0;
+
+      function showPage(index) {
+        currentPage = Math.max(0, Math.min(totalPages - 1, index));
+
+        track.style.transform =
+          `translate3d(-${currentPage * 100}%, 0, 0)`;
+
+        pageCount.textContent =
+          `BAB ${String(currentPage + 1).padStart(2, "0")} / ${String(totalPages).padStart(2, "0")}`;
+
+        progressFill.style.width =
+          `${((currentPage + 1) / totalPages) * 100}%`;
+
+        prevButton.disabled = currentPage === 0;
+        nextButton.disabled = currentPage === totalPages - 1;
+
+        dots.forEach((dot, index) => {
+          const active = index === currentPage;
+          dot.classList.toggle("active", active);
+          dot.setAttribute("aria-current", active ? "page" : "false");
+        });
+
+        // Jaga agar bab aktif mudah dibaca oleh teknologi bantu.
+        chapters.forEach((chapter, index) => {
+          chapter.setAttribute("aria-hidden", index === currentPage ? "false" : "true");
+        });
+      }
+
+      prevButton.addEventListener("click", () => {
+        showPage(currentPage - 1);
+        tryStartMusic();
+      });
+
+      nextButton.addEventListener("click", () => {
+        showPage(currentPage + 1);
+        tryStartMusic();
+      });
+
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          showPage(Number(dot.dataset.page));
+          tryStartMusic();
+        });
+      });
+
+      // Swipe dengan Pointer Events: mendukung sentuhan dan mouse.
+      let startX = 0;
+      let startY = 0;
+      let startTime = 0;
+      let trackingPointer = false;
+
+      viewport.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+
+        startX = event.clientX;
+        startY = event.clientY;
+        startTime = Date.now();
+        trackingPointer = true;
+      }, { passive: true });
+
+      viewport.addEventListener("pointerup", (event) => {
+        if (!trackingPointer) return;
+        trackingPointer = false;
+
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        const elapsed = Date.now() - startTime;
+
+        // Abaikan klik biasa, gerakan vertikal, dan gerakan terlalu lama.
+        if (elapsed > 1200) return;
+        if (Math.abs(dx) < 45) return;
+        if (Math.abs(dx) < Math.abs(dy) * 1.2) return;
+
+        if (dx < 0) {
+          showPage(currentPage + 1);
+        } else {
+          showPage(currentPage - 1);
+        }
+
+        tryStartMusic();
+      }, { passive: true });
+
+      viewport.addEventListener("pointercancel", () => {
+        trackingPointer = false;
+      }, { passive: true });
+
+      // Dukungan cadangan untuk browser yang tidak menyediakan Pointer Events.
+      if (!("PointerEvent" in window)) {
+        let touchX = 0;
+        let touchY = 0;
+
+        viewport.addEventListener("touchstart", (event) => {
+          const touch = event.changedTouches[0];
+          touchX = touch.clientX;
+          touchY = touch.clientY;
+        }, { passive: true });
+
+        viewport.addEventListener("touchend", (event) => {
+          const touch = event.changedTouches[0];
+          const dx = touch.clientX - touchX;
+          const dy = touch.clientY - touchY;
+
+          if (Math.abs(dx) >= 45 &&
+              Math.abs(dx) > Math.abs(dy) * 1.2) {
+            showPage(currentPage + (dx < 0 ? 1 : -1));
+            tryStartMusic();
+          }
+        }, { passive: true });
+      }
+
+      // Browser HP mungkin menolak autoplay sampai ada interaksi pengguna.
+      let musicStarted = false;
+
+      function tryStartMusic() {
+        if (musicStarted) return;
+
+        const playAttempt = music.play();
+
+        if (playAttempt && typeof playAttempt.then === "function") {
+          playAttempt
+            .then(() => {
+              musicStarted = true;
+            })
+            .catch(() => {
+              // Coba lagi saat pengguna berinteraksi.
+            });
+        }
+      }
+
+      // Coba saat halaman dibuka.
+      tryStartMusic();
+
+      // Coba lagi setelah interaksi pertama; tanpa tombol musik.
+      document.addEventListener("pointerdown", tryStartMusic, { once: true });
+      document.addEventListener("touchstart", tryStartMusic, {
+        once: true,
+        passive: true
+      });
+      document.addEventListener("keydown", tryStartMusic, { once: true });
+
+      // Bintang dekoratif.
+      const starsContainer = document.getElementById("stars");
+      const starSymbols = ["✦", "·", "✧", "⋆"];
+
+      for (let i = 0; i < 38; i++) {
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = starSymbols[i % starSymbols.length];
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.fontSize = `${8 + Math.random() * 12}px`;
+        star.style.animationDelay = `${Math.random() * 4}s`;
+        star.style.animationDuration = `${2 + Math.random() * 4}s`;
+        starsContainer.appendChild(star);
+      }
+
+      // Hati melayang sesekali.
+      function createFloatingHeart() {
+        const heart = document.createElement("span");
+        heart.className = "floating-heart";
+        heart.textContent = Math.random() > 0.5 ? "♡" : "♥";
+        heart.style.left = `${Math.random() * 94}%`;
+        heart.style.fontSize = `${12 + Math.random() * 18}px`;
+        heart.style.animationDuration = `${6 + Math.random() * 5}s`;
+
+        document.body.appendChild(heart);
+        heart.addEventListener("animationend", () => heart.remove(), {
+          once: true
+        });
+      }
+
+      setInterval(createFloatingHeart, 1800);
+
+      // Inisialisasi halaman pertama.
+      showPage(0);
+    })();
+  </script>
+</body>
+</html>
